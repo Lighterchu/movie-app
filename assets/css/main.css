@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+    background-color: black;
+}
+
+footer {
+    /* position: fixed ; */
+    bottom: 0;
+    width: 100%;
+    height: 100px; 
+    background-color: #130e0e; 
+    color: #fff; 
+}
+
+/* .nav-container {
+    display: flex;
+    justify-content: space-between;
+} */
+
+/* .login-container {
+    display: flex;
+    justify-content: space-between;
+} */
