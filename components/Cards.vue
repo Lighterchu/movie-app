@@ -7,7 +7,7 @@
     </h1>
     
     <NuxtLink
-      class="bg-gray-600 p-1 rounded-md hover:bg-green-500"
+      class="  p-1 sm:bg-red-700  lg:bg-green-600 rounded-md hover:bg-green-500"
       :to="{ name: 'movies-id', params: { id: data.id } }"
     >More Info
     </NuxtLink>

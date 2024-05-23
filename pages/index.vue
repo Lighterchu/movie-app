@@ -58,7 +58,7 @@ export default {
   },
 
   created() {
-    this.getMovies();
+   this.getMovies();
     this.getTopRated()
   },
 
