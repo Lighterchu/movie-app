@@ -5,6 +5,7 @@
 
 body {
     background-color: black;
+    background-color: linear-gradient(red, yellow);
 }
 
 footer {

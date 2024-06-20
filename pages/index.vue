@@ -1,27 +1,44 @@
 <template>
-    <div class="Main">
-      <div class="w-5/6 m-auto">
-        <h1 class="text-red-500">Out Now!</h1>
-        <div class="bg-gray-800 overflow-x-auto mb-2 rounded-lg">
-          <p v-if="!movies.length">No movies found.</p>
-          <ul v-else class="flex space-x-3">
-            <li v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
-              <Cards :data="movie" class="w-60" />
-            </li>
-          </ul>
-        </div>
-        <h1 class="text-red-500">High Rated Movies</h1>
-        <div class="bg-gray-800 overflow-x-auto rounded-lg">
-          <p v-if="!topRatedMovies.length">No movies found.</p>
-          <ul v-else class="flex space-x-3">
-            <li v-for="topMovie in topRatedMovies" :key="topMovie.id" class="flex-shrink-0">
-              <Cards :data="topMovie" class="w-60" />
-            </li>
-          </ul>
-        </div>
+  <div class="Main">
+    <div class="w-5/6 m-auto">
+      <h1 class="text-red-500">New Movies To be Release</h1>
+      <div class="bg-gray-800 overflow-x-auto mb-2 rounded-lg">
+        <p v-if="!futureMovies.length">No movies found.</p>
+        <ul v-else class="flex space-x-3">
+          <li
+            v-for="futureMovie in futureMovies"
+            :key="futureMovie.id"
+            class="flex-shrink-0"
+          >
+            <Cards :data="futureMovie" class="w-60" />
+          </li>
+        </ul>
+      </div>
+      <h1 class="text-red-500">Out Now!</h1>
+      <div class="bg-gray-800 overflow-x-auto mb-2 rounded-lg">
+        <p v-if="!movies.length">No movies found.</p>
+        <ul v-else class="flex space-x-3">
+          <li v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
+            <Cards :data="movie" class="w-60" />
+          </li>
+        </ul>
+      </div>
+      <h1 class="text-red-500">High Rated Movies</h1>
+      <div class="bg-gray-800 overflow-x-auto rounded-lg">
+        <p v-if="!topRatedMovies.length">No movies found.</p>
+        <ul v-else class="flex space-x-3">
+          <li
+            v-for="topMovie in topRatedMovies"
+            :key="topMovie.id"
+            class="flex-shrink-0"
+          >
+            <Cards :data="topMovie" class="w-60" />
+          </li>
+        </ul>
       </div>
     </div>
-  </template>
+  </div>
+</template>
 
 <script>
 import axios from "axios";
@@ -52,25 +69,52 @@ export default {
     return {
       movies: [],
       topRatedMovies: [],
+      futureMovies: [],
       searchedMovies: [],
       searchInput: "",
     };
   },
 
   created() {
-   this.getMovies();
-    this.getTopRated()
+    this.getMovies();
+    this.getTopRated();
+    this.getFutureMovies();
   },
 
   methods: {
     async getMovies() {
       try {
-        const apiKey = this.$config.public.TMDB
+        const apiKey = this.$config.public.TMDB;
         const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=1`
+          `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=6`
         );
         this.movies = response.data.results;
-        // console.log(this.movies);
+        this.movies.sort(
+          (a, b) => new Date(b.release_date) - new Date(a.release_date)
+        );
+        // console.log(this.movies)
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    },
+
+    async getFutureMovies() {
+      try {
+        const apiKey = this.$config.public.TMDB;
+        const response = await axios.get(
+          `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`
+        );
+        const currentDate = new Date(); // Get the current date
+        this.futureMovies = response.data.results.filter(
+          (movie) => new Date(movie.release_date) > currentDate
+        );
+
+        // Sort the future movies by release date from newest to oldest
+        this.futureMovies.sort(
+          (a, b) => new Date(b.release_date) - new Date(a.release_date)
+        );
+
+        console.log(this.futureMovies);
       } catch (error) {
         console.error("Error fetching movies:", error);
       }
@@ -78,7 +122,7 @@ export default {
 
     async getTopRated() {
       try {
-        const apiKey = this.$config.public.TMDB
+        const apiKey = this.$config.public.TMDB;
         const response = await axios.get(
           `https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`
         );
