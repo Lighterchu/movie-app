@@ -72,6 +72,7 @@ export default {
       futureMovies: [],
       searchedMovies: [],
       searchInput: "",
+      theDate: ''
     };
   },
 
@@ -86,7 +87,7 @@ export default {
       try {
         const apiKey = this.$config.public.TMDB;
         const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=6`
+          `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=1`
         );
         this.movies = response.data.results;
         this.movies.sort(
@@ -101,20 +102,31 @@ export default {
     async getFutureMovies() {
       try {
         const apiKey = this.$config.public.TMDB;
+        let currentPage = 1;
         const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`
+          `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
         );
-        const currentDate = new Date(); // Get the current date
-        this.futureMovies = response.data.results.filter(
-          (movie) => new Date(movie.release_date) > currentDate
-        );
+        
+        const totalPages = response.data.total_pages;
+        const allMovies = response.data.results;
 
-        // Sort the future movies by release date from newest to oldest
-        this.futureMovies.sort(
-          (a, b) => new Date(b.release_date) - new Date(a.release_date)
-        );
+        // Fetch all pages
+        for (currentPage = 2; currentPage <= totalPages; currentPage++) {
+          const pageResponse = await axios.get(
+            `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
+          );
+          allMovies.push(...pageResponse.data.results);
+        }
 
-        console.log(this.futureMovies);
+        const currentDate = new Date();
+        this.theDate = currentDate;
+
+        // Filter and sort movies
+        this.futureMovies = allMovies
+          .filter(movie => new Date(movie.release_date) > currentDate)
+          .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+
+
       } catch (error) {
         console.error("Error fetching movies:", error);
       }
