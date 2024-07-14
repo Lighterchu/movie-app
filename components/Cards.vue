@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-500 p-2 rounded-md ml-2 mt-2 mb-2 mr-2 h-96 overflow-auto"
+    class="bg-gray-500 p-2 rounded-md ml-2 mt-2 mb-2 mr-2 h-96  overflow-auto"
   >
     <h1 class="text-red-900 bg-yellow-300 mb-2 rounded-md text-center">
       {{ data.title }}
