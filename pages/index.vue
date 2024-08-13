@@ -1,8 +1,8 @@
 <template>
   <div class="Main">
-    <div class="lg:w-5/6 m-auto sm:w-80 lg:m-auto ">
+    <div class="lg:w-5/6 m-auto sm:w-80 lg:m-auto  ">
       <h1 class="text-red-500">New Movies To be Release</h1>
-      <div class="bg-gray-800 overflow-x-auto mb-2 rounded-lg">
+      <div class="bg-gray-800  overflow-x-auto rounded-lg">
         <p v-if="!futureMovies.length">No movies found.</p>
         <ul v-else class="flex space-x-3">
           <li
@@ -48,6 +48,9 @@ export default {
   components: {
     Cards,
   },
+
+  
+
   head() {
     return {
       title: "Movie App - Latest Streaming Movie Info",
