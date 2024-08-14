@@ -88,15 +88,22 @@ export default {
   methods: {
     async getMovies() {
       try {
-        const apiKey = this.$config.public.TMDB;
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=1`
-        );
-        this.movies = response.data.results;
-        this.movies.sort(
-          (a, b) => new Date(b.release_date) - new Date(a.release_date)
-        );
-        // console.log(this.movies)
+        const cacheKey = 'nowPlayingMovies';
+        const cachedMovies = localStorage.getItem(cacheKey);
+
+        if (cachedMovies) {
+          this.movies = JSON.parse(cachedMovies);
+        } else {
+          const apiKey = this.$config.public.TMDB;
+          const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=1`
+          );
+          this.movies = response.data.results;
+          this.movies.sort(
+            (a, b) => new Date(b.release_date) - new Date(a.release_date)
+          );
+          localStorage.setItem(cacheKey, JSON.stringify(this.movies));
+        }
       } catch (error) {
         console.error("Error fetching movies:", error);
       }
@@ -104,32 +111,39 @@ export default {
 
     async getFutureMovies() {
       try {
-        const apiKey = this.$config.public.TMDB;
-        let currentPage = 1;
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
-        );
-        
-        const totalPages = response.data.total_pages;
-        const allMovies = response.data.results;
+        const cacheKey = 'upcomingMovies';
+        const cachedMovies = localStorage.getItem(cacheKey);
 
-        // Fetch all pages
-        for (currentPage = 2; currentPage <= totalPages; currentPage++) {
-          const pageResponse = await axios.get(
+        if (cachedMovies) {
+          this.futureMovies = JSON.parse(cachedMovies);
+        } else {
+          const apiKey = this.$config.public.TMDB;
+          let currentPage = 1;
+          const response = await axios.get(
             `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
           );
-          allMovies.push(...pageResponse.data.results);
+
+          const totalPages = response.data.total_pages;
+          const allMovies = response.data.results;
+
+          // Fetch all pages
+          for (currentPage = 2; currentPage <= totalPages; currentPage++) {
+            const pageResponse = await axios.get(
+              `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
+            );
+            allMovies.push(...pageResponse.data.results);
+          }
+
+          const currentDate = new Date();
+          this.theDate = currentDate;
+
+          // Filter and sort movies
+          this.futureMovies = allMovies
+            .filter(movie => new Date(movie.release_date) > currentDate)
+            .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+
+          localStorage.setItem(cacheKey, JSON.stringify(this.futureMovies));
         }
-
-        const currentDate = new Date();
-        this.theDate = currentDate;
-
-        // Filter and sort movies
-        this.futureMovies = allMovies
-          .filter(movie => new Date(movie.release_date) > currentDate)
-          .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-
-
       } catch (error) {
         console.error("Error fetching movies:", error);
       }
@@ -137,12 +151,19 @@ export default {
 
     async getTopRated() {
       try {
-        const apiKey = this.$config.public.TMDB;
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`
-        );
-        this.topRatedMovies = response.data.results;
-        // console.log(this.topRatedMovies);
+        const cacheKey = 'topRatedMovies';
+        const cachedMovies = localStorage.getItem(cacheKey);
+
+        if (cachedMovies) {
+          this.topRatedMovies = JSON.parse(cachedMovies);
+        } else {
+          const apiKey = this.$config.public.TMDB;
+          const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`
+          );
+          this.topRatedMovies = response.data.results;
+          localStorage.setItem(cacheKey, JSON.stringify(this.topRatedMovies));
+        }
       } catch (error) {
         console.error("Error fetching movies:", error);
       }

@@ -3,10 +3,10 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "Bens Portfoilo",
+      title: "Quick Move",
       meta: [{
         name: "description",
-        content: "This is where I host my work and showcase my skills"
+        content: "A place to quickly find the best movies out and what is coming next"
       }]
     }
   },
