@@ -3,7 +3,7 @@
     <div class="nav-container text-red-600 p-2 font-medium flex">
         <NuxtLink
                 class="  p-1 sm:bg-red-700  lg:bg-black rounded-md hover:bg-white"
-                to="login"
+                to="/"
                 >Quick Move
             </NuxtLink>
       <div class="m-auto w-2/4  flex">
