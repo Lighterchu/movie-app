@@ -1,23 +1,27 @@
 <template>
   <div class="header bg-gray-900">
     <div class="nav-container text-red-600 p-2 font-medium flex">
-      <span>
-        <h1>Quick Move</h1>
-      </span>
-      <div class="m-auto">
+        <NuxtLink
+                class="  p-1 sm:bg-red-700  lg:bg-black rounded-md hover:bg-white"
+                to="login"
+                >Quick Move
+            </NuxtLink>
+      <div class="m-auto w-2/4  flex">
         <label class="mr-2" for="">Search Movie</label>
-        <input class="rounded-md" type="text" name="" id="">
+        <input class=" w-3/4 mr-2 pl-2 text-black rounded-md" type="text" name="" id="">
+        <button class="hover:bg-white rounded-md p-1 bg-black ">Search</button>
       </div>
+      
       <div class=" right-0 ml-auto">
         <ul class="flex space-x-2">
             <NuxtLink
-                class="  p-1 sm:bg-red-700  lg:bg-green-600 rounded-md hover:bg-green-500"
-                to="https:www.google.com"
+                class="  p-1 sm:bg-red-700  lg:bg-black rounded-md hover:bg-white"
+                to="login"
                 >Login
             </NuxtLink>
             <NuxtLink
-                class="  p-1 sm:bg-red-700  lg:bg-green-600 rounded-md hover:bg-green-500"
-                to="https:www.google.com"
+                class="  p-1 sm:bg-red-700  lg:bg-black rounded-md hover:bg-white"
+                to="register"
                 >Register
             </NuxtLink>
           <!-- <li>Login</li>

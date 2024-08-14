@@ -1,6 +1,6 @@
 <template>
   <div class="Main">
-    <div class="lg:w-5/6 m-auto sm:w-80 lg:m-auto  ">
+    <div class="lg:w-5/6 m-auto sm:w-5/6 lg:m-auto  ">
       <h1 class="text-red-500">New Movies To be Release</h1>
       <div class="bg-gray-800  overflow-x-auto rounded-lg">
         <p v-if="!futureMovies.length">No movies found.</p>
