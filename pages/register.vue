@@ -13,7 +13,7 @@
         <div class="flex justify-center items-center  bg-gray-100">
           <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
             <h2 class="text-2xl font-semibold mb-6 text-gray-800">Sign Up</h2>
-            <form @submit.prevent="handleSubmit">
+            <form @submit.prevent="register">
               <div class="mb-4">
                 <label
                   for="name"
@@ -23,7 +23,7 @@
                 <input
                   type="text"
                   id="name"
-                  v-model="form.name"
+                  v-model="name"
                   class="block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="John Doe"
                   required
@@ -39,7 +39,7 @@
                 <input
                   type="email"
                   id="email"
-                  v-model="form.email"
+                  v-model="email"
                   class="block w-full px-3 py-2 text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="you@example.com"
                   required
@@ -55,7 +55,7 @@
                 <input
                   type="password"
                   id="password"
-                  v-model="form.password"
+                  v-model="password"
                   class="block w-full px-3 py-2 text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="••••••••"
                   required
@@ -113,16 +113,26 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
-const addData = async () => {
-  try {
-    await db.collection('users').add({
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-    });
-    console.log('Data added successfully!');
-  } catch (error) {
-    console.error('Error adding data:', error);
-  }
+const { $account, $databases, $ID} = useNuxtApp();
+
+const loggedInUser = ref(null);
+const email = ref('');
+const password = ref('');
+const name = ref('');
+
+const login = async (email, password) => {
+  await $account.createEmailPasswordSession(email, password);
+  loggedInUser.value = await $account.get();
+};
+
+const register = async () => {
+  await $account.create("lol", email.value, password.value, name.value);
+  login(email.value, password.value);
+};
+
+const logout = async () => {
+  await $account.deleteSession('current');
+  loggedInUser.value = null;
 };
 
 const form = ref({

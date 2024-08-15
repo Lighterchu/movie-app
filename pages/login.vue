@@ -1,6 +1,11 @@
 <template>
-    <div>
-        <h1>Login</h1>
-        
+    <div class="text-black">
+        <h1>Login, Work in progress</h1>
     </div>
-</template>
+  </template>
+  
+  <script setup>
+import { ref } from 'vue';
+
+  </script>
+  
