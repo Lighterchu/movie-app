@@ -111,9 +111,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-
-// import { db } from '~/plugins/firebase';
+import { ref, onMounted } from "vue";
 
 const addData = async () => {
   try {
