@@ -1,9 +1,9 @@
 <template>
   <div class="Main">
-    <div class="lg:w-5/6 m-auto sm:w-80 lg:m-auto  ">
+    <div class="lg:w-5/6 m-auto sm:w-5/6 lg:m-auto  ">
       <h1 class="text-red-500">New Movies To be Release</h1>
       <div class="bg-gray-800  overflow-x-auto rounded-lg">
-        <p v-if="!futureMovies.length">Searching Movies...</p>
+        <p v-if="!futureMovies.length">Searching for Movies...</p>
         <ul v-else class="flex space-x-3">
           <li
             v-for="futureMovie in futureMovies"
@@ -16,7 +16,7 @@
       </div>
       <h1 class="text-red-500">Out Now!</h1>
       <div class="bg-gray-800 overflow-x-auto mb-2 rounded-lg">
-        <p v-if="!movies.length">Searching Movies...</p>
+        <p v-if="!movies.length">No movies found.</p>
         <ul v-else class="flex space-x-3">
           <li v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
             <Cards :data="movie" class="w-60" />
@@ -25,7 +25,7 @@
       </div>
       <h1 class="text-red-500">High Rated Movies</h1>
       <div class="bg-gray-800 overflow-x-auto rounded-lg">
-        <p v-if="!topRatedMovies.length">Searching Movies...</p>
+        <p v-if="!topRatedMovies.length">No movies found.</p>
         <ul v-else class="flex space-x-3">
           <li
             v-for="topMovie in topRatedMovies"

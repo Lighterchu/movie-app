@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-
   app: {
     head: {
       title: "Quick Move",
@@ -10,7 +9,7 @@ export default defineNuxtConfig({
       }]
     }
   },
-  
+
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
 
@@ -25,12 +24,12 @@ export default defineNuxtConfig({
     public: {
       TMDB: process.env.API_TMDBKEY
     }
-  },  
-
+  },
 
   modules: [
     "@nuxt/image",
-   
-  ]
-  
+  ],
+
+
+  compatibilityDate: "2024-08-15",
 })
