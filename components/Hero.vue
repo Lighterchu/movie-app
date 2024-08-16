@@ -10,7 +10,7 @@
             </NuxtLink> -->
             <div class="flex p-1 ">
                 <nuxt-link to="/">
-                    <NuxtImg src="/logo.png" sizes="sm:60px md:200px" class="rounded-full" />
+                    <NuxtImg src="/logo.png" sizes="sm:60px md:60px" class="rounded-full" />
                 </nuxt-link>
                 <label class="mr-2 mt-2 ml-5">Search Movie</label>
             <input
