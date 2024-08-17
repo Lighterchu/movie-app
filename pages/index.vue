@@ -1,6 +1,6 @@
 <template>
   <div class="Main">
-    <div class=" lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
+    <div class="lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
       <Section title="New Movies To Be Released" :movies="futureMovies" />
       <Section title="Out Now!" :movies="movies" v-if="movies.length" />
       <Section title="High Rated Movies" :movies="topRatedMovies" v-if="topRatedMovies.length" />
@@ -9,106 +9,112 @@
 </template>
 
 <script>
-import axios from "axios";
-import Section from "@/components/Section.vue";
+import axios from 'axios';
+import Section from '@/components/Section.vue';
+import { onMounted, ref } from 'vue';
 
 export default {
-  name: "IndexPage",
+  name: 'IndexPage',
   components: {
     Section,
   },
 
   head() {
     return {
-      title: "Movie App - Latest Streaming Movie Info",
+      title: 'Movie App - Latest Streaming Movie Info',
       meta: [
         {
-          hid: "description",
-          name: "description",
-          content: "Get all the latest streaming movies in theaters & online",
+          hid: 'description',
+          name: 'description',
+          content: 'Get all the latest streaming movies in theaters & online',
         },
         {
-          hid: "keywords",
-          name: "keywords",
-          content: "movies, stream, streaming",
+          hid: 'keywords',
+          name: 'keywords',
+          content: 'movies, stream, streaming',
         },
       ],
     };
   },
 
-  data() {
-    return {
-      movies: [],
-      topRatedMovies: [],
-      futureMovies: [],
-      currentDate: new Date().toISOString().split("T")[0],
-      moviesPerDay: 5,
-    };
-  },
+  setup() {
+    const movies = ref([]);
+    const topRatedMovies = ref([]);
+    const futureMovies = ref([]);
+    const currentDate = new Date().toISOString().split('T')[0];
+    const moviesPerDay = 5;
 
-  created() {
-    this.fetchMovies("nowPlayingMovies", "now_playing", "movies");
-    this.fetchMovies("topRatedMovies", "top_rated", "topRatedMovies");
-    this.fetchFutureMovies();
-  },
-
-  methods: {
-    async fetchMovies(cacheKey, endpoint, stateKey) {
-      const cachedMovies = localStorage.getItem(cacheKey);
+    const fetchMovies = async (cacheKey, endpoint, stateRef) => {
+      const cachedMovies = typeof window !== 'undefined' && localStorage.getItem(cacheKey);
       if (cachedMovies) {
-        this[stateKey] = JSON.parse(cachedMovies);
-      } else {
-        try {
-          const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${this.$config.public.TMDB}&language=en-US&page=1`
-          );
-          this[stateKey] = response.data.results;
-          localStorage.setItem(cacheKey, JSON.stringify(this[stateKey]));
-        } catch (error) {
-          console.error(`Error fetching ${stateKey}:`, error);
-        }
+        stateRef.value = JSON.parse(cachedMovies);
+        return;
       }
-    },
 
-    async fetchFutureMovies() {
-      const cacheKey = "upcomingMovies";
-      const lastDisplayedDateKey = "lastDisplayedDate";
-      const cachedMovies = localStorage.getItem(cacheKey);
-      const lastDisplayedDate = localStorage.getItem(lastDisplayedDateKey);
+      try {
+        const response = await axios.get(
+          `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${useRuntimeConfig().public.TMDB}&language=en-US&page=1`
+        );
+        stateRef.value = response.data.results;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(cacheKey, JSON.stringify(stateRef.value));
+        }
+      } catch (error) {
+        console.error(`Error fetching ${stateRef.value}:`, error);
+      }
+    };
 
-      if (cachedMovies && lastDisplayedDate === this.currentDate) {
-        this.futureMovies = JSON.parse(cachedMovies).slice(0, this.moviesPerDay);
-      } else {
-        try {
+    const fetchFutureMovies = async () => {
+      const cacheKey = 'upcomingMovies';
+      const lastDisplayedDateKey = 'lastDisplayedDate';
+      const cachedMovies = typeof window !== 'undefined' && localStorage.getItem(cacheKey);
+      const lastDisplayedDate = typeof window !== 'undefined' && localStorage.getItem(lastDisplayedDateKey);
+
+      if (cachedMovies && lastDisplayedDate === currentDate) {
+        futureMovies.value = JSON.parse(cachedMovies).slice(0, moviesPerDay);
+        return;
+      }
+
+      try {
+        let allMovies = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        do {
           const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=1`
+            `https://api.themoviedb.org/3/movie/upcoming?api_key=${useRuntimeConfig().public.TMDB}&language=en-US&page=${currentPage}`
           );
+          allMovies.push(...response.data.results);
+          totalPages = response.data.total_pages;
+          currentPage++;
+        } while (currentPage <= totalPages);
 
-          let allMovies = response.data.results;
-          const totalPages = response.data.total_pages;
+        const filteredMovies = allMovies
+          .filter(movie => new Date(movie.release_date) > new Date())
+          .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
 
-          if (totalPages > 1) {
-            for (let currentPage = 2; currentPage <= totalPages; currentPage++) {
-              const pageResponse = await axios.get(
-                `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=${currentPage}`
-              );
-              allMovies.push(...pageResponse.data.results);
-            }
-          }
-
-          const filteredMovies = allMovies
-            .filter(movie => new Date(movie.release_date) > new Date())
-            .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-
+        if (typeof window !== 'undefined') {
           localStorage.setItem(cacheKey, JSON.stringify(filteredMovies));
-          localStorage.setItem(lastDisplayedDateKey, this.currentDate);
-
-          this.futureMovies = filteredMovies.slice(0, this.moviesPerDay);
-        } catch (error) {
-          console.error("Error fetching future movies:", error);
+          localStorage.setItem(lastDisplayedDateKey, currentDate);
         }
+
+        futureMovies.value = filteredMovies.slice(0, moviesPerDay);
+      } catch (error) {
+        console.error('Error fetching future movies:', error);
       }
-    },
+    };
+
+    onMounted(() => {
+      fetchMovies('nowPlayingMovies', 'now_playing', movies);
+      fetchMovies('topRatedMovies', 'top_rated', topRatedMovies);
+      fetchFutureMovies();
+    });
+
+    return {
+      movies,
+      topRatedMovies,
+      futureMovies,
+    };
   },
 };
 </script>
