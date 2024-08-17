@@ -15,13 +15,8 @@
 
     <h2>Date Release: {{ formattedReleaseDate }}</h2>
 
-    <!-- <img class="rounded-md " :src="posterUrl" alt="Movie Poster" /> -->
-    <NuxtImg
-      :src="posterUrl"
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
-      class="rounded-md w-full h-60" 
-      alt="Movie Poster"
-    />
+    <img class="rounded-md " :src="posterUrl" alt="Movie Poster" />
+   
   </div>
 </template>
 
