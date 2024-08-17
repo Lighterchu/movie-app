@@ -1,55 +1,22 @@
 <template>
   <div class="Main">
-    <div class="lg:w-5/6 m-auto sm:w-5/6 lg:m-auto  ">
-      <h1 class="text-red-500">New Movies To be Release</h1>
-      <div class="bg-gray-800  overflow-x-auto rounded-lg">
-        <p v-if="!futureMovies.length">Searching for Movies...</p>
-        <ul v-else class="flex space-x-3">
-          <li
-            v-for="futureMovie in futureMovies"
-            :key="futureMovie.id"
-            class="flex-shrink-0"
-          >
-            <Cards :data="futureMovie" class="w-60" />
-          </li>
-        </ul>
-      </div>
-      <h1 class="text-red-500">Out Now!</h1>
-      <div class="bg-gray-800 overflow-x-auto mb-2 rounded-lg">
-        <p v-if="!movies.length">No movies found.</p>
-        <ul v-else class="flex space-x-3">
-          <li v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
-            <Cards :data="movie" class="w-60" />
-          </li>
-        </ul>
-      </div>
-      <h1 class="text-red-500">High Rated Movies</h1>
-      <div class="bg-gray-800 overflow-x-auto rounded-lg">
-        <p v-if="!topRatedMovies.length">No movies found.</p>
-        <ul v-else class="flex space-x-3">
-          <li
-            v-for="topMovie in topRatedMovies"
-            :key="topMovie.id"
-            class="flex-shrink-0"
-          >
-            <Cards :data="topMovie" class="w-60" />
-          </li>
-        </ul>
-      </div>
+    <div class=" lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
+      <Section title="New Movies To Be Released" :movies="futureMovies" />
+      <Section title="Out Now!" :movies="movies" v-if="movies.length" />
+      <Section title="High Rated Movies" :movies="topRatedMovies" v-if="topRatedMovies.length" />
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import Cards from "@/components/Cards.vue";
-export default {
-  name: "index",
-  components: {
-    Cards,
-  },
+import Section from "@/components/Section.vue";
 
-  
+export default {
+  name: "IndexPage",
+  components: {
+    Section,
+  },
 
   head() {
     return {
@@ -68,104 +35,78 @@ export default {
       ],
     };
   },
+
   data() {
     return {
       movies: [],
       topRatedMovies: [],
       futureMovies: [],
-      searchedMovies: [],
-      searchInput: "",
-      theDate: ''
+      currentDate: new Date().toISOString().split("T")[0],
+      moviesPerDay: 5,
     };
   },
 
   created() {
-    this.getMovies();
-    this.getTopRated();
-    this.getFutureMovies();
+    this.fetchMovies("nowPlayingMovies", "now_playing", "movies");
+    this.fetchMovies("topRatedMovies", "top_rated", "topRatedMovies");
+    this.fetchFutureMovies();
   },
 
   methods: {
-    async getMovies() {
-      try {
-        const cacheKey = 'nowPlayingMovies';
-        const cachedMovies = localStorage.getItem(cacheKey);
-
-        if (cachedMovies) {
-          this.movies = JSON.parse(cachedMovies);
-        } else {
-          const apiKey = this.$config.public.TMDB;
+    async fetchMovies(cacheKey, endpoint, stateKey) {
+      const cachedMovies = localStorage.getItem(cacheKey);
+      if (cachedMovies) {
+        this[stateKey] = JSON.parse(cachedMovies);
+      } else {
+        try {
           const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US&page=1`
+            `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${this.$config.public.TMDB}&language=en-US&page=1`
           );
-          this.movies = response.data.results;
-          this.movies.sort(
-            (a, b) => new Date(b.release_date) - new Date(a.release_date)
-          );
-          localStorage.setItem(cacheKey, JSON.stringify(this.movies));
+          this[stateKey] = response.data.results;
+          localStorage.setItem(cacheKey, JSON.stringify(this[stateKey]));
+        } catch (error) {
+          console.error(`Error fetching ${stateKey}:`, error);
         }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
       }
     },
 
-    async getFutureMovies() {
-      try {
-        const cacheKey = 'upcomingMovies';
-        const cachedMovies = localStorage.getItem(cacheKey);
+    async fetchFutureMovies() {
+      const cacheKey = "upcomingMovies";
+      const lastDisplayedDateKey = "lastDisplayedDate";
+      const cachedMovies = localStorage.getItem(cacheKey);
+      const lastDisplayedDate = localStorage.getItem(lastDisplayedDateKey);
 
-        if (cachedMovies) {
-          this.futureMovies = JSON.parse(cachedMovies);
-        } else {
-          const apiKey = this.$config.public.TMDB;
-          let currentPage = 1;
+      if (cachedMovies && lastDisplayedDate === this.currentDate) {
+        this.futureMovies = JSON.parse(cachedMovies).slice(0, this.moviesPerDay);
+      } else {
+        try {
           const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
+            `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=1`
           );
 
+          let allMovies = response.data.results;
           const totalPages = response.data.total_pages;
-          const allMovies = response.data.results;
 
-          // Fetch all pages
-          for (currentPage = 2; currentPage <= totalPages; currentPage++) {
-            const pageResponse = await axios.get(
-              `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${currentPage}`
-            );
-            allMovies.push(...pageResponse.data.results);
+          if (totalPages > 1) {
+            for (let currentPage = 2; currentPage <= totalPages; currentPage++) {
+              const pageResponse = await axios.get(
+                `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=${currentPage}`
+              );
+              allMovies.push(...pageResponse.data.results);
+            }
           }
 
-          const currentDate = new Date();
-          this.theDate = currentDate;
-
-          // Filter and sort movies
-          this.futureMovies = allMovies
-            .filter(movie => new Date(movie.release_date) > currentDate)
+          const filteredMovies = allMovies
+            .filter(movie => new Date(movie.release_date) > new Date())
             .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
 
-          localStorage.setItem(cacheKey, JSON.stringify(this.futureMovies));
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    },
+          localStorage.setItem(cacheKey, JSON.stringify(filteredMovies));
+          localStorage.setItem(lastDisplayedDateKey, this.currentDate);
 
-    async getTopRated() {
-      try {
-        const cacheKey = 'topRatedMovies';
-        const cachedMovies = localStorage.getItem(cacheKey);
-
-        if (cachedMovies) {
-          this.topRatedMovies = JSON.parse(cachedMovies);
-        } else {
-          const apiKey = this.$config.public.TMDB;
-          const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`
-          );
-          this.topRatedMovies = response.data.results;
-          localStorage.setItem(cacheKey, JSON.stringify(this.topRatedMovies));
+          this.futureMovies = filteredMovies.slice(0, this.moviesPerDay);
+        } catch (error) {
+          console.error("Error fetching future movies:", error);
         }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
       }
     },
   },

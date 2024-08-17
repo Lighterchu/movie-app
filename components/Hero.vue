@@ -5,10 +5,7 @@
       <div
         class="bg-gray-900 top-0 sm:block lg:hidden w-full h-20 left-0 absolute flex justify-center"
       >
-        <!-- <NuxtLink class="p-1 lg:bg-black rounded-md hover:bg-white" to="/"
-            >Quick Move
-            </NuxtLink> -->
-        <div class="flex p-1">
+       <div class="flex p-1">
           <nuxt-link to="/">
             <NuxtImg
               src="/logo.png"
