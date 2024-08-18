@@ -38,7 +38,9 @@
         >Quick Move
       </NuxtLink>
 
-      <div class="m-auto lg:block sm:hidden w-2/4 flex">
+      <!-- Still needs more work -->
+
+      <!-- <div class="m-auto lg:block sm:hidden w-2/4 flex">
         <label class="mr-2" for="">Search Movie</label>
         <input
           class="w-3/4 mr-2 pl-2 text-black rounded-md"
@@ -47,7 +49,7 @@
           id=""
         />
         <button class="hover:bg-white rounded-md p-1 bg-black">Search</button>
-      </div>
+      </div> -->
 
       <div class="right-0 ml-auto">
         <ul class="flex space-x-2">
