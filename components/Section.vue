@@ -2,7 +2,7 @@
     <div class="section">
       <h1 class="text-red-500">{{ title }}</h1>
       <div class="bg-gray-800 overflow-x-auto rounded-lg">
-        <p v-if="!movies.length">No movies found.</p>
+        <p v-if="!movies.length">searching...</p>
         <ul v-else class="flex space-x-3">
           <li v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
             <Cards :data="movie" class="w-60" />
