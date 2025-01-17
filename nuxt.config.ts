@@ -26,7 +26,7 @@ export default defineNuxtConfig({
         },
         {
           property: 'og:image',
-          content: '/image/movie-app-image.png', // Replace with your image URL
+          content: '/movie-app-image.png', // Replace with your image URL
         },
         {
           property: 'og:url',
