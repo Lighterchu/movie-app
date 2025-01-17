@@ -43,7 +43,14 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
+  runtimeConfig: {
+    public: {
+      TMDB: process.env.NUXT_PUBLIC_TMDB
+    }
+  },
   modules: [
     '@nuxt/image',
   ],
 })
+
