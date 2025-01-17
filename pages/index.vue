@@ -1,6 +1,6 @@
 <template>
   <div class="Main">
-    <div class=" lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
+    <div class="lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
       <Section title="New Movies To Be Released" :movies="futureMovies" />
       <Section title="Out Now!" :movies="movies" v-if="movies.length" />
       <Section title="High Rated Movies" :movies="topRatedMovies" v-if="topRatedMovies.length" />
@@ -42,7 +42,6 @@ export default {
       topRatedMovies: [],
       futureMovies: [],
       currentDate: new Date().toISOString().split("T")[0],
-      moviesPerDay: 5,
     };
   },
 
@@ -55,15 +54,22 @@ export default {
   methods: {
     async fetchMovies(cacheKey, endpoint, stateKey) {
       const cachedMovies = localStorage.getItem(cacheKey);
-      if (cachedMovies) {
+      const oldDate = localStorage.getItem("lastFetchDate");
+
+      if (cachedMovies && oldDate === this.currentDate) {
+        console.log("Using cached movies:", this.currentDate);
         this[stateKey] = JSON.parse(cachedMovies);
       } else {
         try {
+          console.log("Fetching new movies");
           const response = await axios.get(
             `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${this.$config.public.TMDB}&language=en-US&page=1`
           );
           this[stateKey] = response.data.results;
+
+          // Update cache and date
           localStorage.setItem(cacheKey, JSON.stringify(this[stateKey]));
+          localStorage.setItem("lastFetchDate", this.currentDate);
         } catch (error) {
           console.error(`Error fetching ${stateKey}:`, error);
         }
@@ -72,42 +78,80 @@ export default {
 
     async fetchFutureMovies() {
       const cacheKey = "upcomingMovies";
-      const lastDisplayedDateKey = "lastDisplayedDate";
-      const cachedMovies = localStorage.getItem(cacheKey);
-      const lastDisplayedDate = localStorage.getItem(lastDisplayedDateKey);
+      const lastFetchInfoKey = "lastFetchInfo";
+      const moviesPerWeek = 5;
 
-      if (cachedMovies && lastDisplayedDate === this.currentDate) {
-        this.futureMovies = JSON.parse(cachedMovies).slice(0, this.moviesPerDay);
-      } else {
-        try {
+      const cachedMovies = JSON.parse(localStorage.getItem(cacheKey) || "[]");
+      const lastFetchInfo = JSON.parse(
+        localStorage.getItem(lastFetchInfoKey) || "{}"
+      );
+      const currentWeek = this.getCurrentWeek();
+
+      // Check if we already fetched movies for this week
+      if (
+        lastFetchInfo?.week === currentWeek &&
+        cachedMovies.length >= moviesPerWeek
+      ) {
+        // Use cached movies
+        this.futureMovies = cachedMovies.slice(0, moviesPerWeek);
+        return;
+      }
+
+      try {
+        // Start fetching from the last page and index or from the beginning
+        let currentPage = lastFetchInfo?.page || 1;
+        let currentMovieIndex = lastFetchInfo?.index || 0;
+        let allFetchedMovies = [...cachedMovies];
+
+        while (allFetchedMovies.length < moviesPerWeek) {
           const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=1`
+            `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=${currentPage}`
           );
 
-          let allMovies = response.data.results;
-          const totalPages = response.data.total_pages;
+          const movies = response.data.results
+            .filter((movie) => new Date(movie.release_date) > new Date())
+            .sort(
+              (a, b) => new Date(a.release_date) - new Date(b.release_date)
+            );
 
-          if (totalPages > 1) {
-            for (let currentPage = 2; currentPage <= totalPages; currentPage++) {
-              const pageResponse = await axios.get(
-                `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.$config.public.TMDB}&language=en-US&page=${currentPage}`
-              );
-              allMovies.push(...pageResponse.data.results);
-            }
+          // Append new movies to the local cache
+          allFetchedMovies.push(...movies.slice(currentMovieIndex));
+          currentMovieIndex = 0; // Reset index after the first batch
+          currentPage++;
+
+          // Break if there are no more pages to fetch
+          if (currentPage > response.data.total_pages) {
+            break;
           }
-
-          const filteredMovies = allMovies
-            .filter(movie => new Date(movie.release_date) > new Date())
-            .sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-
-          localStorage.setItem(cacheKey, JSON.stringify(filteredMovies));
-          localStorage.setItem(lastDisplayedDateKey, this.currentDate);
-
-          this.futureMovies = filteredMovies.slice(0, this.moviesPerDay);
-        } catch (error) {
-          console.error("Error fetching future movies:", error);
         }
+
+        // Cache the movies and fetch info
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify(allFetchedMovies.slice(0, moviesPerWeek))
+        );
+        localStorage.setItem(
+          lastFetchInfoKey,
+          JSON.stringify({
+            week: currentWeek,
+            page: currentPage - 1,
+            index: currentMovieIndex,
+          })
+        );
+
+        this.futureMovies = allFetchedMovies.slice(0, moviesPerWeek);
+      } catch (error) {
+        console.error("Error fetching future movies:", error);
       }
+    },
+
+    getCurrentWeek() {
+      // Returns the current year-week string, e.g., "2025-03"
+      const now = new Date();
+      const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
+      const pastDaysOfYear = (now - firstDayOfYear + 86400000) / 86400000; // Add 1 day in ms
+      const weekNumber = Math.ceil(pastDaysOfYear / 7);
+      return `${now.getFullYear()}-${weekNumber}`;
     },
   },
 };
