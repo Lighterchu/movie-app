@@ -5,7 +5,12 @@
       <div
         class="bg-gray-900 top-0 sm:block lg:hidden w-full h-20 left-0 absolute flex justify-center"
       >
-       <div class="flex p-1">
+      <NuxtLink
+        class="p-1 lg:bg-black md:bg-white rounded-md hover:bg-white"
+        to="/"
+        >Quick Move
+      </NuxtLink>
+       <!-- <div class="flex p-1">
           <nuxt-link to="/">
             <NuxtImg
               src="/logo.png"
@@ -28,7 +33,7 @@
           <NuxtLink class="p-1 absolute right-0 bg-black mr-2 rounded-md hover:bg-white" to="login"
             >Sign In
           </NuxtLink>
-        </div>
+        </div> -->
       </div>
       <!-- --- -->
 
@@ -51,7 +56,7 @@
         <button class="hover:bg-white rounded-md p-1 bg-black">Search</button>
       </div> -->
 
-      <div class="right-0 ml-auto">
+      <!-- <div class="right-0 ml-auto">
         <ul class="flex space-x-2">
           <NuxtLink class="p-1 lg:bg-black rounded-md hover:bg-white" to="login"
             >Login
@@ -61,10 +66,8 @@
             to="register"
             >Register
           </NuxtLink>
-          <!-- <li>Login</li>
-            <li>Register</li> -->
         </ul>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
