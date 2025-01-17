@@ -13,12 +13,12 @@ export default defineNuxtConfig({
         {
           hid: 'keywords',
           name: 'keywords',
-          content: 'movies, stream, streaming',
+          content: 'movies, stream, streaming, quickmove',
         },
         // Open Graph meta tags
         {
           property: 'og:title',
-          content: 'Movie App - Latest Streaming Movie Info',
+          content: 'Quick Move - Latest Streaming Movie Info',
         },
         {
           property: 'og:description',
@@ -26,7 +26,7 @@ export default defineNuxtConfig({
         },
         {
           property: 'og:image',
-          content: 'https://yourapp.com/path-to-your-image.jpg', // Replace with your image URL
+          content: '/image/movie-app-image.png', // Replace with your image URL
         },
         {
           property: 'og:url',
@@ -39,11 +39,11 @@ export default defineNuxtConfig({
         // Twitter Card meta tags
         {
           name: 'twitter:card',
-          content: 'summary_large_image',
+          content: '/image/movie-app-image.png',
         },
         {
           name: 'twitter:title',
-          content: 'Movie App - Latest Streaming Movie Info',
+          content: 'Quick Move - Latest Streaming Movie Info',
         },
         {
           name: 'twitter:description',
@@ -51,7 +51,7 @@ export default defineNuxtConfig({
         },
         {
           name: 'twitter:image',
-          content: 'https://yourapp.com/path-to-your-image.jpg', // Replace with your image URL
+          content: '/image/movie-app-image.png', // Replace with your image URL
         },
       ]
     }
