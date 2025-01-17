@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'Movie App - Latest Streaming Movie Info',
+      title: 'Quick Move - Latest Streaming Movie Info',
       meta: [
         // General meta tags
         {
