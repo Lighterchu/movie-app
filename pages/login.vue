@@ -50,6 +50,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useUserStore } from "@/stores/user"; // Import Pinia store
+import { useRouter } from 'vue-router';
 
 
 

@@ -1,6 +1,8 @@
 <template>
   <div class="Main">
-    <h1 v-if="userStore.user">Welcome, {{ userStore.user.name }}!</h1>
+    <div class=" p-2  lg:w-2/12 m-2 flex justify-center">
+      <h1 v-if="userStore.user">Welcome, {{ userStore.user.name }}!</h1>
+    </div>
     <div class="lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
       <Section title="New Movies To Be Released" :movies="futureMovies" />
       <Section title="Out Now!" :movies="movies" v-if="movies.length" />
