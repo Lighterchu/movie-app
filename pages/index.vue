@@ -1,5 +1,6 @@
 <template>
   <div class="Main">
+    <h1 v-if="userStore.user">Welcome, {{ userStore.user.name }}!</h1>
     <div class="lg:w-5/6 sm:w-full sm:p-4 lg:m-auto">
       <Section title="New Movies To Be Released" :movies="futureMovies" />
       <Section title="Out Now!" :movies="movies" v-if="movies.length" />
@@ -12,6 +13,7 @@
 import axios from 'axios';
 import Section from '@/components/Section.vue';
 import { onMounted, ref } from 'vue';
+import { useUserStore } from "~/stores/user";
 
 export default {
   name: 'IndexPage',
@@ -20,12 +22,14 @@ export default {
   },
 
   setup() {
+    const userStore = useUserStore();  // Initialize the Pinia store
     const movies = ref([]);
     const topRatedMovies = ref([]);
     const futureMovies = ref([]);
     const currentDate = new Date().toISOString().split('T')[0];
     const moviesPerDay = 5;
-
+    userStore.getUser();
+    // Function to fetch movies data
     const fetchMovies = async (cacheKey, endpoint, stateRef) => {
       const cachedMovies = typeof window !== 'undefined' && localStorage.getItem(cacheKey);
       if (cachedMovies) {
@@ -46,6 +50,7 @@ export default {
       }
     };
 
+    // Function to fetch upcoming future movies
     const fetchFutureMovies = async () => {
       const cacheKey = 'upcomingMovies';
       const lastDisplayedDateKey = 'lastDisplayedDate';
@@ -86,13 +91,16 @@ export default {
       }
     };
 
+    // On component mounted, fetch movie data
     onMounted(() => {
       fetchMovies('nowPlayingMovies', 'now_playing', movies);
       fetchMovies('topRatedMovies', 'top_rated', topRatedMovies);
       fetchFutureMovies();
     });
 
+    // Return values to template
     return {
+      userStore,  // Returning user store to be accessed in the template
       movies,
       topRatedMovies,
       futureMovies,
@@ -100,3 +108,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.Main {
+  /* Add any styles you need */
+}
+</style>

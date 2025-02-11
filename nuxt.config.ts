@@ -36,7 +36,9 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   css: ['~/assets/css/main.css'],
+
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -46,11 +48,15 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      TMDB: process.env.NUXT_PUBLIC_TMDB
+      //make sure to remove this
+      TMDB: process.env.NUXT_PUBLIC_TMDB || "6914264f4ab3de527cd12a15e3659d0b"
     }
   },
+
   modules: [
     '@nuxt/image',
+    '@pinia/nuxt'
   ],
-})
 
+  compatibilityDate: '2025-02-10',
+})

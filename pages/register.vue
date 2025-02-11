@@ -8,6 +8,14 @@
       <div class="mt-2">
         <h1>Register</h1>
       </div>
+      <div class=" bg-red-400" @click="Devlogin">
+        <h1>Just Login Dev Button</h1>
+      </div>
+      <div class=" bg-red-400" @click="logout">
+        <h1>Log Out</h1>
+      </div>
+      <div>
+      </div>
       <!-- <button onclick="addData">Testing Database</button> -->
       <div class="h-3/4">
         <div class="flex justify-center items-center  bg-gray-100">
@@ -112,8 +120,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useUserStore } from "~/stores/user";
 
 const { $account, $databases, $ID} = useNuxtApp();
+const userStore = useUserStore();
 
 const loggedInUser = ref(null);
 const email = ref('');
@@ -123,7 +133,19 @@ const name = ref('');
 const login = async (email, password) => {
   await $account.createEmailPasswordSession(email, password);
   loggedInUser.value = await $account.get();
+  userStore.setUser(loggedInUser.value);
+  console.log("User Store:", userStore.user);
+ 
 };
+
+const Devlogin = async () => {
+  await $account.createEmailPasswordSession("testing@gmail.com", "Bigbang734");
+  loggedInUser.value = await $account.get();
+  userStore.setUser(loggedInUser.value);
+  console.log("User Store:", userStore.user);
+ 
+};
+
 
 const register = async () => {
   await $account.create("lol", email.value, password.value, name.value);
@@ -133,6 +155,8 @@ const register = async () => {
 const logout = async () => {
   await $account.deleteSession('current');
   loggedInUser.value = null;
+  userStore.clearUser()
+  
 };
 
 const form = ref({
