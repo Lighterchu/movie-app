@@ -122,6 +122,10 @@
 import { ref, onMounted } from "vue";
 import { useUserStore } from "~/stores/user";
 
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
 const { $account, $databases, $ID} = useNuxtApp();
 const userStore = useUserStore();
 
@@ -148,11 +152,14 @@ const Devlogin = async () => {
 
 
 const register = async () => {
-  await $account.create("lol", email.value, password.value, name.value);
+  const userId = crypto.randomUUID(); // Generates a unique UUID
+  await $account.create(userId, email.value, password.value, name.value);
   login(email.value, password.value);
+  alert("Account Created")
+  router.push("/")
 };
 
-const logout = async () => {
+const logout = async () => {  
   await $account.deleteSession('current');
   loggedInUser.value = null;
   userStore.clearUser()
