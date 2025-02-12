@@ -1,6 +1,6 @@
 <template>
   <div class="h-full text-center">
-    <div class="m-auto bg-black border-white border text-white blur-0 rounded-3xl bg-op-40 sm:w-3/4 w-2/4 h-3/4">
+    <div class="m-auto bg-black border-white border text-white blur-0 rounded-3xl bg-op-40 lg:w-3/4 sm:1/2 h-3/4">
       <div class="mt-2">
         <h1>Sign In</h1>
       </div>

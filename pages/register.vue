@@ -3,7 +3,7 @@
     class="main_container h-full text-center flex justify-center items-center"
   >
     <div
-      class="m-auto bg-black border-white border text-white blur-0 rounded-3xl bg-op-40 sm:w-3/4 w-2/4 h-5/6"
+      class="m-auto  bg-black border-white border text-white blur-0 rounded-3xl bg-op-40  lg:w-3/4 sm:1/2 h-5/6"
     >
       <div class="mt-2">
         <h1>Register</h1>
