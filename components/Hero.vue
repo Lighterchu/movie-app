@@ -27,32 +27,34 @@ const userStore = useUserStore();
 const user = computed(() => userStore.user);
 const router = useRouter();
 
-let sessionChecker;
-let lastChecked = 0; // Track last request timestamp
+//needs more work addeed to session checker
 
-const checkSession = async () => {
-  const now = Date.now();
-  if (now - lastChecked < 60000) return; // Prevent frequent calls within 60s
+// let sessionChecker;
+// let lastChecked = 0; // Track last request timestamp
 
-  lastChecked = now; // Update last checked time
+// const checkSession = async () => {
+//   const now = Date.now();
+//   if (now - lastChecked < 60000) return; // Prevent frequent calls within 60s
 
-  try {
-    await $account.get(); // Check session validity
-  } catch (err) {
-    console.warn("Session expired or user logged out remotely.");
-    userStore.clearUser();
-    router.push("/login"); // Redirect to login page
-  }
-};
+//   lastChecked = now; // Update last checked time
 
-onMounted(() => {
-  checkSession(); // Check immediately on load
-  sessionChecker = setInterval(checkSession, 60000); // Check every 60s
-});
+//   try {
+//     await $account.get(); // Check session validity
+//   } catch (err) {
+//     console.warn("Session expired or user logged out remotely.");
+//     userStore.clearUser();
+//     router.push("/login"); // Redirect to login page
+//   }
+// };
 
-onUnmounted(() => {
-  clearInterval(sessionChecker); // Cleanup interval on unmount
-});
+// onMounted(() => {
+//   checkSession(); // Check immediately on load
+//   sessionChecker = setInterval(checkSession, 60000); // Check every 60s
+// });
+
+// onUnmounted(() => {
+//   clearInterval(sessionChecker); // Cleanup interval on unmount
+// });
 
 const logout = async () => {
   try {

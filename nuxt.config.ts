@@ -49,7 +49,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       //make sure to remove this
-      TMDB: process.env.NUXT_PUBLIC_TMDB || "6914264f4ab3de527cd12a15e3659d0b"
+      TMDB: process.env.NUXT_PUBLIC_TMDB 
     }
   },
 
