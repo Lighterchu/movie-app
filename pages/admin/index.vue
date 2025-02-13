@@ -86,7 +86,13 @@
 <script>
 import { useUserStore } from '@/stores/user';
 
+definePageMeta({
+  middleware: ["auth"]
+})
+
 export default {
+
+
   data() {
     return {
       page: 'dashboard', // The current page: dashboard, users, settings, etc.
@@ -110,12 +116,8 @@ export default {
   try {
     // Fetch users from the store
     await userStore.fetchUsers();
-
-    // Now you can access the 'users' state after it's been populated
-    console.log(userStore.users); // This will give you the list of users
-    const totalUsers = userStore.users.length; // Get the total number of users
-    console.log('Total Users:', totalUsers);
-
+   // Now you can access the 'users' state after it's been populated
+   const totalUsers = userStore.users.length; // Get the total number of users
     // Optionally, you can set the total number of users to a local data property
     this.numberUsers = totalUsers;
   } catch (error) {
