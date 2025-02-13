@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null,
+    users: null,
   }),
   actions: {
     setUser(userData) {
@@ -26,5 +27,31 @@ export const useUserStore = defineStore("user", {
         localStorage.removeItem('user');
       }
     },
+    async fetchUsers() {
+      try {
+        const response = await fetch('http://localhost:8888/.netlify/functions/getUsers'); // Call the Netlify function
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+    
+        // Check if 'users' exists in the response
+        if (data && data.users) {
+          this.users = data.users;
+        } else {
+          console.error('No users data found in response:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    }
+    
   },
 });
+
+
+
+
+
+

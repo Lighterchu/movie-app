@@ -122,6 +122,7 @@ export default {
       alert("Logged out!");
       this.$router.push("/login"); // Redirect to login page (or home page)
     },
+    
   },
 };
 </script>
