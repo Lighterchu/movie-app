@@ -2,36 +2,50 @@ import { defineStore } from "pinia";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    user: useCookie("user"), // Store user in a cookie
+    user: process.client ? JSON.parse(localStorage.getItem("user")) || null : null,
     users: null,
   }),
   actions: {
     setUser(userData) {
-      this.user = userData; // Updates the cookie automatically
+      this.user = userData;
+      if (process.client) {
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
     },
     getUser() {
-      return this.user; // Reads directly from the cookie
+      if (process.client) {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          this.user = JSON.parse(savedUser);
+          return this.user;
+        }
+      }
+      return this.user;
     },
     clearUser() {
-      this.user = null; // Clears the cookie
+      this.user = null;
+      if (process.client) {
+        localStorage.removeItem("user");
+      }
     },
     async fetchUsers() {
       try {
-        const response = await fetch('http://localhost:8888/.netlify/functions/getUsers');
+        const baseUrl = process.env.NUXT_PUBLIC_API_URL || "http://localhost:8888";
+        const response = await fetch(`${baseUrl}/.netlify/functions/getUsers`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-    
+
         const data = await response.json();
-    
+
         if (data && data.users) {
           this.users = data.users;
         } else {
-          console.error('No users data found in response:', data);
+          console.error("No users data found in response:", data);
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users:", error);
       }
-    }
+    },
   },
 });

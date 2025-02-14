@@ -5,7 +5,7 @@ export default defineNuxtPlugin(() => {
 
   client
     .setEndpoint('https://cloud.appwrite.io/v1') // Your Appwrite endpoint
-    .setProject('66bdc5c2001ad462e3df'); // Your project ID
+    .setProject(process.env.APPWRITE_PROJECT_ID); // Your project ID
 
   const account = new Account(client);
   const databases = new Databases(client);
