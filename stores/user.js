@@ -2,30 +2,28 @@ import { defineStore } from "pinia";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    user: process.client ? JSON.parse(localStorage.getItem("user")) || null : null,
+    user: null,
     users: null,
   }),
   actions: {
-    setUser(userData) {
-      this.user = userData;
-      if (process.client) {
-        localStorage.setItem("user", JSON.stringify(userData));
+    async getUser() {
+      try {
+        const nuxtApp = useNuxtApp(); // ✅ Get Nuxt app instance first
+        const user = await nuxtApp.$account.get() // ✅ Use injected Appwrite
+        console.log(user)
+        this.user = user; // ✅ Assign user data to state
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        this.user = null;
       }
     },
-    getUser() {
-      if (process.client) {
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          this.user = JSON.parse(savedUser);
-          return this.user;
-        }
-      }
-      return this.user;
-    },
-    clearUser() {
-      this.user = null;
-      if (process.client) {
-        localStorage.removeItem("user");
+    async logout() {
+      try {
+        const nuxtApp = useNuxtApp(); // ✅ Get Nuxt app instance
+        await nuxtApp.$account.deleteSession("current"); // ✅ Secure logout
+        this.user = null;
+      } catch (error) {
+        console.error("Error logging out:", error);
       }
     },
     async fetchUsers() {
@@ -37,12 +35,7 @@ export const useUserStore = defineStore("user", {
         }
 
         const data = await response.json();
-
-        if (data && data.users) {
-          this.users = data.users;
-        } else {
-          console.error("No users data found in response:", data);
-        }
+        this.users = data?.users || null;
       } catch (error) {
         console.error("Error fetching users:", error);
       }

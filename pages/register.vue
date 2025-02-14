@@ -137,16 +137,14 @@ const name = ref('');
 const login = async (email, password) => {
   await $account.createEmailPasswordSession(email, password);
   loggedInUser.value = await $account.get();
-  userStore.setUser(loggedInUser.value);
-  console.log("User Store:", userStore.user);
+ 
  
 };
 
 const Devlogin = async () => {
   await $account.createEmailPasswordSession("testing@gmail.com", "Bigbang734");
   loggedInUser.value = await $account.get();
-  userStore.setUser(loggedInUser.value);
-  console.log("User Store:", userStore.user);
+  
  
 };
 
@@ -162,8 +160,6 @@ const register = async () => {
 const logout = async () => {  
   await $account.deleteSession('current');
   loggedInUser.value = null;
-  userStore.clearUser()
-  
 };
 
 const form = ref({

@@ -49,8 +49,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      //make sure to remove this
-      TMDB: process.env.NUXT_PUBLIC_TMDB 
+      TMDB: process.env.NUXT_PUBLIC_TMDB,
+      APP_WRITE: process.env.APPWRITE_PROJECT_ID
+
     }
   },
 

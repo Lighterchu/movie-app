@@ -113,12 +113,10 @@ export default {
     },
     updateProfile() {
       const userStore = useUserStore();
-      userStore.setUser(this.user); // Save updated user data back to the store and localStorage
       alert("Profile updated successfully!");
     },
     logout() {
       const userStore = useUserStore();
-      userStore.clearUser(); // Clear user data from store and localStorage
       alert("Logged out!");
       this.$router.push("/login"); // Redirect to login page (or home page)
     },

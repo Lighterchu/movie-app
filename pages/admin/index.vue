@@ -1,17 +1,23 @@
 <template>
-  <div class="flex h-screen bg-gray-100">
+  <div class=" h-screen bg-gray-100">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-800 text-white p-4">
-      <h1 class="text-2xl font-bold mb-6 text-center">Admin Panel</h1>
-      <nav>
-        <ul class=" bg-black rounded-lg p-2 ">
-          <li class="hover:bg-green-500 rounded-lg"><button @click="ChangePage('dashboard')">DashBoard</button></li>
-          <li class="hover:bg-green-500 rounded-lg"><button @click="ChangePage('users')">users</button></li>
-          <li class="hover:bg-green-500 rounded-lg"><button @click="ChangePage('settings')">settings</button></li>
-          <li class="hover:bg-green-500 rounded-lg"><button @click="ChangePage('reports')">reports</button></li>
-        </ul>
-      </nav>
-    </aside>
+    <div class=" bg-black lg:w-full md:1/2">
+      <ul>
+        <li class="hover:bg-green-500 rounded-lg">
+          <button @click="ChangePage('dashboard')">Dashboard</button>
+        </li>
+        <li class="hover:bg-green-500 rounded-lg hidden lg:block">
+          <button @click="ChangePage('users')">Users</button>
+        </li>
+
+        <li class="hover:bg-green-500 rounded-lg">
+          <button @click="ChangePage('settings')">Settings</button>
+        </li>
+        <li class="hover:bg-green-500 rounded-lg">
+          <button @click="ChangePage('reports')">Reports</button>
+        </li>
+      </ul>
+    </div>
 
     <!-- Main Content -->
     <main class="flex-1 p-6">
@@ -70,13 +76,15 @@
         <form @submit.prevent="saveSettings">
           <div class="mb-4">
             <label for="siteName" class="block text-sm font-medium text-gray-700">Site Name</label>
-            <input type="text" id="siteName" v-model="settings.siteName" class="mt-1 block w-full p-2 border rounded-md" />
+            <input type="text" id="siteName" v-model="settings.siteName"
+              class="mt-1 block w-full p-2 border rounded-md" />
           </div>
           <div class="mb-4">
             <label for="siteUrl" class="block text-sm font-medium text-gray-700">Site URL</label>
             <input type="url" id="siteUrl" v-model="settings.siteUrl" class="mt-1 block w-full p-2 border rounded-md" />
           </div>
-          <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">Save Settings</button>
+          <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">Save
+            Settings</button>
         </form>
       </div>
     </main>
@@ -91,8 +99,6 @@ definePageMeta({
 })
 
 export default {
-
-
   data() {
     return {
       page: 'dashboard', // The current page: dashboard, users, settings, etc.
@@ -108,24 +114,28 @@ export default {
         siteName: 'MySite',
         siteUrl: 'https://www.mysite.com',
       },
-      numberUsers: 0 // Initialize it to 0
+      numberUsers: 0, // Initialize it to 0
+      isDropdownOpen: false, // Dropdown visibility state
     };
   },
   async created() {
-  const userStore = useUserStore();
-  try {
-    // Fetch users from the store
-    await userStore.fetchUsers();
-   // Now you can access the 'users' state after it's been populated
-   const totalUsers = userStore.users.length; // Get the total number of users
-    // Optionally, you can set the total number of users to a local data property
-    this.numberUsers = totalUsers;
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  }
-},
+    const userStore = useUserStore();
+    try {
+      // Fetch users from the store
+      await userStore.fetchUsers();
+      // Now you can access the 'users' state after it's been populated
+      const totalUsers = userStore.users.length; // Get the total number of users
+      // Optionally, you can set the total number of users to a local data property
+      this.numberUsers = totalUsers;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  },
 
   methods: {
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen; // Toggle the dropdown visibility
+    },
     editUser(user) {
       alert(`Editing user: ${user.name}`);
       // Add your logic to edit a user here
@@ -140,8 +150,8 @@ export default {
       alert('Settings saved!');
       // Here, you would send the updated settings to your API or backend
     },
-    ChangePage(pageName){
-     this.page = pageName 
+    ChangePage(pageName) {
+      this.page = pageName
     }
   }
 };

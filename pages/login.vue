@@ -70,7 +70,6 @@ const login = async () => {
   try {
     await $account.createEmailPasswordSession(email.value, password.value);
     loggedInUser.value = await $account.get();
-    userStore.setUser(loggedInUser.value)
     router.push('/');
   } catch (err) {
     alert("Please check the email and password.")
@@ -81,7 +80,6 @@ const login = async () => {
 const logout = async () => {
   await $account.deleteSession("current");
   loggedInUser.value = null;
-  useUserStore.clearUser()
 };
 
 const form = ref({
